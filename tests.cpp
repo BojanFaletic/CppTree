@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <gtest/gtest.h>
+#include <assert.h>
 
 #include "loader.hpp"
 #include "parser.hpp"
@@ -8,6 +9,7 @@
 using namespace std;
 
 void load_parser(Loader &ld, Parser &pa) {
+  assert(ld.get().size() > 0);
   for (auto &entry : ld.get()) {
     pa.add(entry.first, entry.second);
   }
@@ -15,7 +17,7 @@ void load_parser(Loader &ld, Parser &pa) {
 
 TEST(Parser, add) {
   Parser pa;
-  Loader ld{"../test_cases/add_new.json"};
+  Loader ld{"./test_cases/add_new.json"};
 
   load_parser(ld, pa);
   for (pair<string, int> item : ld.get()){
@@ -25,7 +27,7 @@ TEST(Parser, add) {
 
 TEST(Parser, assign) {
   Parser pa;
-  Loader ld{"../test_cases/assign.json"};
+  Loader ld{"./test_cases/assign.json"};
 
   load_parser(ld, pa);
   for (pair<string, int> item : ld.get()){
@@ -35,7 +37,7 @@ TEST(Parser, assign) {
 
 TEST(Parser, branch) {
   Parser pa;
-  Loader ld{"../test_cases/branch.json"};
+  Loader ld{"./test_cases/branch.json"};
 
   load_parser(ld, pa);
   for (pair<string, int> item : ld.get()){
@@ -45,7 +47,7 @@ TEST(Parser, branch) {
 
 TEST(Parser, insert_new) {
   Parser pa;
-  Loader ld{"../test_cases/insert_new.json"};
+  Loader ld{"./test_cases/insert_new.json"};
 
   load_parser(ld, pa);
   for (pair<string, int> item : ld.get()){
@@ -55,7 +57,17 @@ TEST(Parser, insert_new) {
 
 TEST(Parser, full) {
   Parser pa;
-  Loader ld{"../test_cases/full.json"};
+  Loader ld{"./test_cases/full.json"};
+
+  load_parser(ld, pa);
+  for (pair<string, int> item : ld.get()){
+    EXPECT_EQ(pa.parse(item.first), item.second);
+  }
+}
+
+TEST(Parser, large) {
+  Parser pa;
+  Loader ld{"./test_cases/large.json"};
 
   load_parser(ld, pa);
   for (pair<string, int> item : ld.get()){
