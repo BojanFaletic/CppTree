@@ -9,5 +9,5 @@ For large datasets parser outperform normal parsing.
 
 Benchmark            |       Time      |       CPU   |Iterations
 ---                  | ---             | ---         | ---
-Parse_parser         |     851 ns      |    847 ns   |   809112
+Parse_parser         |    119 ns       |   119 ns    |  5470928
 Parse_naive          |    7657 ns      |   7652 ns   |   100000

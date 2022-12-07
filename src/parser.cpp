@@ -25,7 +25,7 @@ Action decode_node(size_t name, size_t node, size_t n_match) {
   return Action::idle;
 }
 
-size_t n_match(string query, string key) {
+size_t n_match(string &query, string &key) {
   size_t search_size = min(query.size(), key.size());
   for (size_t n = 0; n < search_size; n++) {
     if (query[n] != key[n]) {
