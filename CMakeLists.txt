@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(parser VERSION 0.1.0)
 
-#include(CTest)
-#enable_testing()
 set(CMAKE_CXX_STANDARD 20)
 
 file(GLOB_RECURSE src_files ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 include_directories(inc)
+
+find_package(GTest REQUIRED)
+
 add_executable(parser main.cpp ${src_files})
+add_executable(test tests.cpp ${src_files})
+target_link_libraries(test GTest::GTest GTest::Main)
 
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
