@@ -83,16 +83,16 @@ search:
 }
 
 int Parser::parse(string name) {
-  vector<Node> &selected_root = root;
+  vector<Node> *selected_root = &root;
 search:
-  for (Node &nd : selected_root) {
+  for (Node &nd : *selected_root) {
     size_t n_same = n_match(name, nd.key);
     if (n_same == name.size()) {
       return nd.value;
     }
     if (n_same == nd.key.size()) {
       name = name.substr(n_same);
-      selected_root = nd.next;
+      selected_root = &nd.next;
       goto search;
     }
   }
