@@ -1,2 +1,6 @@
 build
 .vscode
+
+## For generating random tests use parseTree repo
+gen_tests*
+test.json
