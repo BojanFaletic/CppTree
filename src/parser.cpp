@@ -1,32 +1,100 @@
+#include "parser.hpp"
 #include <cstdint>
-#include <memory>
-#include <string>
-#include <vector>
-#include <tuple>
+#include <iostream>
 
 using namespace std;
 
-class Parser {
-  pair<string, int> value;
-  vector<unique_ptr<Parser>> next;
+enum Action { idle, search, assign, insert, merge, extend };
 
-public:
-  Parser(string name, int value){
-    this->value = {name, value};
+Action decode_node(size_t name, size_t node, size_t n_match) {
+  if (name == node && n_match == name) {
+    return Action::assign;
   }
 
-  void add(string name, int value) {
-    auto pt = make_unique<Parser>(Parser(name, value));
-    next.push_back(move(pt));
+  if (n_match == node && name > node) {
+    return Action::search;
   }
 
-  int parse(string name) {
-    for (auto const &p : next){
-      Parser const *pt = p.get();
-      if (pt->value.first == name){
-        return pt->value.second;
-      }
+  if (n_match == name && name < node) {
+    return Action::insert;
+  }
+
+  if (n_match != 0) {
+    return Action::merge;
+  }
+  return Action::idle;
+}
+
+size_t n_match(string query, string key) {
+  size_t search_size = min(query.size(), key.size());
+  for (size_t n = 0; n < search_size; n++) {
+    if (query[n] != key[n]) {
+      return n;
     }
-    return -1;
   }
-};
+  return search_size;
+}
+
+Parser::Parser() : root{} {}
+Parser::Parser(string name, int value) : root{{name, value, {}}} {}
+
+void Parser::add(string name, int value) {
+  vector<Node> *selected_root = &root;
+
+search:
+  for (Node &nd : *selected_root) {
+    size_t n_same = n_match(name, nd.key);
+    Action action = decode_node(name.size(), nd.key.size(), n_same);
+
+    if (action == Action::search) {
+      name = name.substr(n_same);
+      selected_root = &nd.next;
+      cout << "search\n";
+      goto search;
+    }
+
+    if (action == Action::insert) {
+      nd.key = nd.key.substr(n_same);
+      Node new_nd{name, value, {nd}};
+      swap(nd, new_nd);
+
+      cout << "insert\n";
+      return;
+    }
+
+    if (action == Action::merge) {
+      nd.key = nd.key.substr(n_same);
+      Node new_branch = Node{name.substr(n_same), value};
+      Node new_root{name.substr(0, n_same), -1, vector<Node>{nd, new_branch}};
+      swap(new_root, nd);
+      cout << "merge\n";
+      return;
+    }
+
+    if (action == Action::assign) {
+      nd.key = name;
+      cout << "assign\n";
+      return;
+    }
+  }
+  // extend node
+  selected_root->push_back({name, value, {}});
+  cout << "extend\n";
+}
+
+int Parser::parse(string name) {
+  vector<Node> &selected_root = root;
+search:
+  for (Node &nd : selected_root) {
+    size_t n_same = n_match(name, nd.key);
+    if (n_same == name.size()) {
+      return nd.value;
+    }
+    if (n_same == nd.key.size()) {
+      name = name.substr(n_same);
+      selected_root = nd.next;
+      goto search;
+    }
+  }
+  return -1;
+}
