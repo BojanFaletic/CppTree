@@ -49,7 +49,6 @@ search:
     if (action == Action::search) {
       name = name.substr(n_same);
       selected_root = &nd.next;
-
       goto search;
     }
 
@@ -57,8 +56,6 @@ search:
       nd.key = nd.key.substr(n_same);
       Node new_nd{name, value, {nd}};
       swap(nd, new_nd);
-
-
       return;
     }
 
@@ -67,19 +64,16 @@ search:
       Node new_branch = Node{name.substr(n_same), value};
       Node new_root{name.substr(0, n_same), -1, vector<Node>{nd, new_branch}};
       swap(new_root, nd);
-
       return;
     }
 
     if (action == Action::assign) {
-      nd.key = name;
-
+      nd.value = value;
       return;
     }
   }
   // extend node
   selected_root->push_back({name, value, {}});
-
 }
 
 int Parser::parse(string name) {

@@ -14,7 +14,17 @@ void load_parser(Loader &ld, Parser &pa) {
 
 TEST(Parser, add) {
   Parser pa;
-  Loader ld{"/home/bojan/git/CppTree/test_cases/add_new.json"};
+  Loader ld{"../test_cases/add_new.json"};
+
+  load_parser(ld, pa);
+  for (pair<string, int> item : ld.get()){
+    EXPECT_EQ(pa.parse(item.first), item.second);
+  }
+}
+
+TEST(Parser, assign) {
+  Parser pa;
+  Loader ld{"../test_cases/assign.json"};
 
   load_parser(ld, pa);
   for (pair<string, int> item : ld.get()){
