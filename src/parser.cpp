@@ -49,7 +49,7 @@ search:
     if (action == Action::search) {
       name = name.substr(n_same);
       selected_root = &nd.next;
-      cout << "search\n";
+
       goto search;
     }
 
@@ -58,7 +58,7 @@ search:
       Node new_nd{name, value, {nd}};
       swap(nd, new_nd);
 
-      cout << "insert\n";
+
       return;
     }
 
@@ -67,19 +67,19 @@ search:
       Node new_branch = Node{name.substr(n_same), value};
       Node new_root{name.substr(0, n_same), -1, vector<Node>{nd, new_branch}};
       swap(new_root, nd);
-      cout << "merge\n";
+
       return;
     }
 
     if (action == Action::assign) {
       nd.key = name;
-      cout << "assign\n";
+
       return;
     }
   }
   // extend node
   selected_root->push_back({name, value, {}});
-  cout << "extend\n";
+
 }
 
 int Parser::parse(string name) {
